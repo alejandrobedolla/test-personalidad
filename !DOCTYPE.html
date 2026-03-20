@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test de Personalidad</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #F5F0E8;
+    --warm-white: #FDFAF4;
+    --ink: #1A1209;
+    --terracotta: #C4552A;
+    --terracotta-light: #E8846A;
+    --sand: #D9C9A8;
+    --sand-light: #EDE3CF;
+    --muted: #8A7A65;
+    --success: #3D6B47;
+  }
+
+  html, body {
+    min-height: 100vh;
+    background-color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--ink);
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 10% 0%, rgba(196,85,42,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 80% at 90% 100%, rgba(196,85,42,0.06) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Grain texture */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 5rem;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 3.5rem;
+    animation: fadeDown 0.8s ease both;
+  }
+
+  .header-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    background: rgba(196,85,42,0.1);
+    padding: 5px 14px;
+    border-radius: 99px;
+    margin-bottom: 1.25rem;
+  }
+
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.5rem, 7vw, 4rem);
+    font-weight: 900;
+    line-height: 1.05;
+    color: var(--ink);
+    margin-bottom: 0.75rem;
+  }
+
+  .header h1 span {
+    color: var(--terracotta);
+    font-style: italic;
+  }
+
+  .header p {
+    font-size: 15px;
+    color: var(--muted);
+    font-weight: 300;
+    max-width: 400px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  /* Decorative line */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 2.5rem 0;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--sand);
+  }
+  .divider-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--terracotta);
+    border-radius: 50%;
+  }
+
+  /* Question cards */
+  .question {
+    background: var(--warm-white);
+    border: 1px solid var(--sand);
+    border-radius: 20px;
+    padding: 1.75rem 2rem;
+    margin-bottom: 1.25rem;
+    animation: fadeUp 0.6s ease both;
+    transition: box-shadow 0.2s;
+  }
+  .question:hover { box-shadow: 0 6px 32px rgba(26,18,9,0.07); }
+
+  .question-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .q-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--terracotta);
+    background: rgba(196,85,42,0.1);
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .q-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--ink);
+  }
+
+  .options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-left: 44px;
+  }
+
+  .opt {
+    background: var(--cream);
+    border: 1.5px solid var(--sand);
+    border-radius: 99px;
+    padding: 8px 18px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    color: var(--ink);
+    cursor: pointer;
+    transition: all 0.18s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .opt::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--terracotta);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.2s ease;
+    border-radius: inherit;
+    z-index: 0;
+  }
+
+  .opt span { position: relative; z-index: 1; }
+
+  .opt:hover {
+    border-color: var(--terracotta);
+    color: var(--terracotta);
+  }
+
+  .opt.sel {
+    border-color: var(--terracotta);
+    color: #fff;
+    font-weight: 500;
+  }
+  .opt.sel::before { transform: scaleX(1); }
+
+  /* Submit */
+  .submit-area {
+    text-align: center;
+    margin-top: 2.5rem;
+    animation: fadeUp 0.6s 0.8s ease both;
+  }
+
+  .submit-btn {
+    background: var(--ink);
+    color: var(--cream);
+    border: none;
+    border-radius: 99px;
+    padding: 16px 48px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .submit-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--terracotta);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+    border-radius: inherit;
+  }
+
+  .submit-btn span { position: relative; z-index: 1; }
+
+  .submit-btn:hover::after { transform: scaleX(1); }
+  .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(196,85,42,0.3); }
+  .submit-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; box-shadow: none; }
+  .submit-btn:disabled::after { display: none; }
+
+  .warn-msg {
+    font-size: 13px;
+    color: var(--terracotta);
+    margin-top: 0.75rem;
+    display: none;
+    animation: shake 0.4s ease;
+  }
+
+  /* Results */
+  .result-wrap {
+    animation: fadeUp 0.7s ease both;
+  }
+
+  .result-hero {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  .result-hero h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 6vw, 3rem);
+    font-weight: 900;
+    color: var(--ink);
+    margin-bottom: 0.5rem;
+  }
+
+  .result-hero h2 span { color: var(--terracotta); font-style: italic; }
+
+  .result-hero p {
+    font-size: 15px;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  .result-grid {
+    display: grid;
+    gap: 10px;
+  }
+
+  .result-row {
+    background: var(--warm-white);
+    border: 1px solid var(--sand);
+    border-radius: 14px;
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .result-row:nth-child(1) { animation-delay: 0.05s; }
+  .result-row:nth-child(2) { animation-delay: 0.1s; }
+  .result-row:nth-child(3) { animation-delay: 0.15s; }
+  .result-row:nth-child(4) { animation-delay: 0.2s; }
+  .result-row:nth-child(5) { animation-delay: 0.25s; }
+  .result-row:nth-child(6) { animation-delay: 0.3s; }
+  .result-row:nth-child(7) { animation-delay: 0.35s; }
+  .result-row:nth-child(8) { animation-delay: 0.4s; }
+  .result-row:nth-child(9) { animation-delay: 0.45s; }
+  .result-row:nth-child(10) { animation-delay: 0.5s; }
+  .result-row:nth-child(11) { animation-delay: 0.55s; }
+
+  .res-q {
+    font-size: 14px;
+    color: var(--muted);
+    flex: 1;
+  }
+
+  .res-a {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--terracotta);
+    white-space: nowrap;
+  }
+
+  .restart-btn {
+    display: block;
+    margin: 2rem auto 0;
+    background: transparent;
+    border: 1.5px solid var(--ink);
+    border-radius: 99px;
+    padding: 13px 40px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .restart-btn:hover { background: var(--ink); color: var(--cream); }
+
+  /* Animations */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+
+  /* Stagger cards */
+  .question:nth-child(1)  { animation-delay: 0.05s; }
+  .question:nth-child(2)  { animation-delay: 0.1s; }
+  .question:nth-child(3)  { animation-delay: 0.15s; }
+  .question:nth-child(4)  { animation-delay: 0.2s; }
+  .question:nth-child(5)  { animation-delay: 0.25s; }
+  .question:nth-child(6)  { animation-delay: 0.3s; }
+  .question:nth-child(7)  { animation-delay: 0.35s; }
+  .question:nth-child(8)  { animation-delay: 0.4s; }
+  .question:nth-child(9)  { animation-delay: 0.45s; }
+  .question:nth-child(10) { animation-delay: 0.5s; }
+  .question:nth-child(11) { animation-delay: 0.55s; }
+
+  /* Decorative number on the side */
+  .deco-numbers {
+    position: fixed;
+    right: 2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    opacity: 0.12;
+    pointer-events: none;
+  }
+  .deco-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ink);
+    writing-mode: vertical-rl;
+    letter-spacing: 0.1em;
+  }
+
+  @media (max-width: 600px) {
+    .container { padding: 2rem 1rem 4rem; }
+    .question { padding: 1.25rem; }
+    .options { padding-left: 0; }
+    .deco-numbers { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="deco-numbers">
+  <span class="deco-num">TEST · PERSONALIDAD · 2026</span>
+</div>
+
+<div class="container">
+  <div class="header">
+    <div class="header-tag">Test de personalidad</div>
+    <h1>¿Quien eres <span>realmente?</span></h1>
+    <p>Responde todas las preguntas con honestidad y descubre tu perfil completo.</p>
+  </div>
+
+  <div id="form-area"></div>
+
+  <div class="submit-area" id="submit-area">
+    <button class="submit-btn" id="submit-btn" onclick="submit()">
+      <span>Ver mi resultado &rarr;</span>
+    </button>
+    <p class="warn-msg" id="warn">Responde todas las preguntas para continuar.</p>
+  </div>
+</div>
+
+<script>
+const questions = [
+  { q: "¿Que color de piel te gusta?", opts: ["Moreno/raro", "Rubio", "Blanco"] },
+  { q: "¿Que superhéroe eres?", opts: ["Batman", "Superman", "Spiderman"] },
+  { q: "¿Batman, Superman o Spiderman — cual es tu favorito?", opts: ["Batman", "Superman", "Spiderman", "Otro"] },
+  { q: "¿Que color te gusta?", opts: ["Negro", "Azul", "Rojo"] },
+  { q: "¿Que medio de transporte te gusta?", opts: ["Carro", "Moto", "Caminar"] },
+  { q: "¿Como te gustan fisicamente?", opts: ["Flacos", "Gordos", "Musculosos"] },
+  { q: "¿Cual tipo de pareja te gusta mas?", opts: ["Introvertido/a", "Callado/a", "Hablador/a"] },
+  { q: "¿Que largo de pelo prefieres?", opts: ["Corto", "Largo", "Mediano"] },
+  { q: "¿Que talla usas?", opts: ["Mediano", "Talla grande", "Pequeño/corto"] },
+  { q: "¿En que eres mejor?", opts: ["Matematicas", "Español", "Las dos", "Ninguna"] },
+  { q: "¿Como prefieres pasar tu tiempo libre?", opts: ["Salir con amigos", "Quedarme en casa", "Deporte", "Redes sociales"] }
+];
+
+const answers = new Array(questions.length).fill(null);
+
+function buildForm() {
+  const fa = document.getElementById('form-area');
+  fa.innerHTML = questions.map((q, qi) => `
+    <div class="question">
+      <div class="question-header">
+        <div class="q-number">${String(qi+1).padStart(2,'0')}</div>
+        <div class="q-text">${q.q}</div>
+      </div>
+      <div class="options">
+        ${q.opts.map((o, oi) => `
+          <button class="opt" id="opt-${qi}-${oi}" onclick="pick(${qi},${oi})">
+            <span>${o}</span>
+          </button>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function pick(qi, oi) {
+  answers[qi] = oi;
+  questions[qi].opts.forEach((_, i) => {
+    document.getElementById(`opt-${qi}-${i}`).classList.toggle('sel', i === oi);
+  });
+}
+
+function submit() {
+  if (answers.some(a => a === null)) {
+    const w = document.getElementById('warn');
+    w.style.display = 'block';
+    w.style.animation = 'none';
+    setTimeout(() => w.style.animation = '', 10);
+    return;
+  }
+
+  document.getElementById('form-area').innerHTML = '';
+  document.getElementById('submit-area').style.display = 'none';
+
+  const rows = questions.map((q, i) => `
+    <div class="result-row">
+      <span class="res-q">${q.q}</span>
+      <span class="res-a">${q.opts[answers[i]]}</span>
+    </div>`).join('');
+
+  const div = document.createElement('div');
+  div.className = 'result-wrap';
+  div.innerHTML = `
+    <div class="result-hero">
+      <h2>Tus <span>respuestas</span></h2>
+      <p>Asi te describes tu mismo/a &mdash; sin filtros.</p>
+    </div>
+    <div class="divider"><div class="divider-dot"></div></div>
+    <div class="result-grid">${rows}</div>
+    <button class="restart-btn" onclick="location.reload()">Volver a empezar</button>`;
+
+  document.querySelector('.container').appendChild(div);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+buildForm();
+</script>
+</body>
+</html>
